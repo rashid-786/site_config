@@ -1,0 +1,4 @@
+name = Site Configuration
+description = It extends admin's site information form and provides node data as JSON output for page content type only.
+core = 7.x
+package = Custom Module

@@ -1,0 +1,58 @@
+<?php
+
+/**
+ * Implements hook_menu()
+ */
+function site_config_menu(){
+  $items['page_json/%/%'] = array(
+    'title' => t('Page JSON'),
+    'page callback' => array('page_json_data'),
+    'page arguments' => array(1, 2),
+    'access callback' => TRUE
+  );
+  return $items;
+}
+
+/**
+ * Shows the json based data if both the condition set as True else unauthorize
+ * to access the page.
+ * @param type $api_key
+ * @param type $node_id
+ */
+function page_json_data($api_key, $node_id){
+  if(is_numeric($node_id)){
+    $page_object = node_load($node_id);
+    if(!empty($page_object) && $page_object->type == 'page' && variable_get('siteapikey') == $api_key){
+      drupal_json_output($page_object);
+    }else{
+      drupal_access_denied();
+    }
+  }
+}
+
+/**
+ * Implements Hook_form_BASE_FORM_ID_alter().
+ * @param type $form
+ * @param type $form_state
+ * @param type $form_id
+ */
+function site_config_form_system_site_information_settings_alter(&$form, &$form_state, $form_id){  
+  $form['siteapikey'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Site Api Key'),
+    '#default_value' => variable_get('siteapikey', 'No API Key yet')
+  );
+  $form['actions']['submit']['#value'] = t('Update Configuration');
+  $form['#submit'][] = 'site_config_submit';
+}
+
+/**
+ * Show the updated message on the message box.
+ * @param type $form
+ * @param type $form_state
+ */
+function site_config_submit($form, &$form_state){  
+  drupal_get_messages('status');
+  drupal_set_message(t('Site API Key "@key_value" has been saved',
+             array('@key_value'=>  variable_get('siteapikey'))));
+}

@@ -1,0 +1,8 @@
+<?php
+
+/**
+ * Implements hook_uninstall() 
+ */
+function site_config_uninstall(){
+  variable_del('siteapikey');
+}
